@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>jQuery UI Tabs - Open on mouseover</title>
+    <title>Temperature and Humidity Monitoring</title>
     <!-- http://jqueryui.com/tabs/#mouseover -->
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="stylesheet" href="static/libs/jquery-ui.min.css">
@@ -166,7 +166,10 @@
   
         socket.on('my_response', function(msg) {
           console.log(msg.data);
-          $('#log').append('Received #'+msg.count+': '+JSON.stringify(msg.data)+'<br>').html(); 
+          // $('#log').append('Received #'+msg.count+': '+JSON.stringify(msg.data)+'<br>').html(); 
+          $('#log').append('Received #' + msg.count +
+                          ': Humidity: ' + msg.data.vlhkost + 
+                          ' Temperature: ' + msg.data.teplota +'<br>').html(); 
           x.push(parseFloat(msg.count));
           y.push(parseFloat(msg.data.vlhkost));
           z.push(parseFloat(msg.data.teplota));
@@ -187,7 +190,6 @@
             },
             yaxis: {
                 title: 'y',
-                //range: [-1,1]
             }
           };
           var traces = new Array();
@@ -302,10 +304,10 @@
 
     <div id="tabs">
       <ul>
-        <li><a href="#tabs-1">Flask-SocketIO Live</a></li>
-        <li><a href="#tabs-2">Flask-SocketIO Graph Live</a></li>
-        <li><a href="#tabs-3">Flask-SocketIO Humidity Gauge Live</a></li>
-        <li><a href="#tabs-4">Flask-SocketIO Temperature Gauge Live</a></li>
+        <li><a href="#tabs-1">Live Monitoring</a></li>
+        <li><a href="#tabs-2">Graph Live</a></li>
+        <li><a href="#tabs-3">Humidity Gauge</a></li>
+        <li><a href="#tabs-4">Temperature Gauge</a></li>
       </ul>
 
       <div id="tabs-1">

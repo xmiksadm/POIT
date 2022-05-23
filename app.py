@@ -165,7 +165,7 @@ def db_message(message):
 def disconnect_request():
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my_response',
-         {'data': 'Disconnected!', 'count': session['receive_count']})
+         {'data': 'Disconnected! Reload for reconnect..', 'count': session['receive_count']})
     disconnect()
 
 @socketio.on('connect', namespace='/test')
@@ -183,6 +183,8 @@ def db_message(message):
 @socketio.on('disconnect', namespace='/test')
 def test_disconnect():
     print('Client disconnected', request.sid)
+    session['btn_value'] = 'stop'
+    session['db_value'] = 'stop'
 
 @socketio.on('click_event', namespace='/test')
 def db_message(message):
