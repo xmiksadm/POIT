@@ -1,31 +1,10 @@
 <!DOCTYPE HTML>
 <html>
  <head>
-  <title>Flask-SocketIO Test</title>
-   <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
-   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.min.js"></script>
-   <script type="text/javascript" charset="utf-8">
-     $(document).ready(function() {
-      $('#buttonVal').click(function(event) {
-
-          var $this = $(this);
-          if ($this.text() == "Start") {
-            $this.text("Stop");
-            $this.val("start");
-          }
-          else {
-            $this.text("Start");
-            $this.val("stop");
-          }
-          console.log($this.val())
-
-          socket.emit('click_event', {value: $('#buttonVal').val()});
-          return false; });
-      });
-    </script>
+  <title>POIT Flask-SocketIO</title>
  </head>
  <body>
-  <h1>POIT zaverecne zadanie</h1>
+  <h1>POIT Záverečné zadanie</h1>
   <a href="/tabs">
     <button>Open</button>
   </a>

@@ -16,10 +16,12 @@
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
 
+    <!-- Dialogs -->
+    <script type="text/javascript" src="static/libs/init-dialogs.js"></script>
+    
     <script>
       
       $(document).ready(function() {
-        
         var x = new Array();
         var y = new Array();
         var z = new Array();
@@ -171,7 +173,7 @@
           traceHumidity = {
               x: x,
               y: y,
-              name: 'Vlhkost'
+              name: 'Vlhkosť'
           };
           traceTemperature = {
               x: x,
@@ -179,7 +181,7 @@
               name: 'Teplota'
           };
           layout = {
-            title: 'Vlhkost and teplota',
+            title: 'Vlhkosť a teplota',
             xaxis: {
                 title: 'x',
             },
@@ -197,77 +199,37 @@
           gaugeTemperature.value = msg.data.teplota;
 
           if (gaugeHumidity.value > 0 && gaugeHumidity.value < 20) {
-            $( "#dialog-critical" ).dialog({
-              modal: true,
-              buttons: {
-                Ok: function() {
-                  $( this ).dialog( "close" );
-                }
-              }
-            });
+            $( "#dialog-critical" ).dialog("open");
           }
           else if (gaugeHumidity.value > 20 && gaugeHumidity.value < 30) {
-            $( "#dialog-low" ).dialog({
-              modal: true,
-              buttons: {
-                Ok: function() {
-                  $( this ).dialog( "close" );
-                }
-              }
-            });
+            $( "#dialog-low" ).dialog("open");
           }
           else if (gaugeHumidity.value > 50 && gaugeHumidity.value < 60) {
-            $( "#dialog-high" ).dialog({
-              modal: true,
-              buttons: {
-                Ok: function() {
-                  $( this ).dialog( "close" );
-                }
-              }
-            });
+            $( "#dialog-high" ).dialog("open");
           }
           else if (gaugeHumidity.value > 60 && gaugeHumidity.value <= 100) {
-            $( "#dialog-critical" ).dialog({
-              modal: true,
-              buttons: {
-                Ok: function() {
-                  $( this ).dialog( "close" );
-                }
-              }
-            });
+            $( "#dialog-critical" ).dialog("open");
           }
           else  if (gaugeHumidity.value >= 30 && gaugeHumidity.value <= 50){
-            $( "#dialog-critical" ).dialog("close");
-            $( "#dialog-high" ).dialog("close");
-            $( "#dialog-low" ).dialog("close");
+            //To check if the dialog is open or not 
+            if ($( "#dialog-critical" ).dialog("isOpen"))
+              $( "#dialog-critical" ).dialog("close");
+            if ($( "#dialog-high" ).dialog("isOpen"))
+              $( "#dialog-high" ).dialog("close");
+            if ($( "#dialog-low" ).dialog("isOpen"))
+              $( "#dialog-low" ).dialog("close");
           }
         });
-  
-        $('form#emit').submit(function(event) {
-            socket.emit('my_event', {value: $('#emit_value').val()});
-            return false; });
+        
         $('#buttonVal').click(function(event) {
-  
-          // socket.emit('db_event', {value: $('#buttonVal').val()});
-          // socket.emit('click_event', {value: $('#buttonVal').val()});
-          var $this = $(this);
-          // if ($this.text() == "Start") {
-          //   $this.text("Stop");
-          //   $this.val("start");
-          // }
-          // else {
-          //   $this.text("Start");
-          //   $this.val("stop");
-          // }
-          if ($(this).val() == "start") {
-            $(this).val("stop");
+          if ($(this).text() == "Start") {
             $(this).text("Stop");
+            $(this).val("start");
           }
           else {
-            $(this).val("start");
             $(this).text("Start");
+            $(this).val("stop");
           }
-
           console.log($('#buttonVal').val())
           socket.emit('db_event', {value: $('#buttonVal').val()});
           socket.emit('click_event', {value: $('#buttonVal').val()});
@@ -348,11 +310,6 @@
 
       <div id="tabs-1">
         <h1>Flask-SocketIO Test</h1>
-        <h2>Send:</h2>
-        <form id="emit" method="POST" action='#'>
-          <input type="text" name="emit_value" id="emit_value" placeholder="Amplituda">
-          <input type="submit" value="Send">
-        </form>
         <button id="buttonVal" type="submit" value="start">Start</button>
         <form id="disconnect" method="POST" action="#">
           <input type="submit" value="Disconnect">
@@ -379,11 +336,21 @@
           <p>Humidity High</p>
         </div>
       </div>
+      
       <div id="tabs-4">
         <h1>Flask-SocketIO Temperature Gauge</h1>
         <canvas id="canvasID2"></canvas>
-        
+        <div id="dialog-critical-temp" title="Temperature Critical">
+          <p>Temperature Critical</p>
+        </div>
+        <div id="dialog-low-temp" title="Temperature Low">
+          <p>Temperature Low</p>
+        </div>
+        <div id="dialog-high-temp" title="Temperature High">
+          <p>Temperature High</p>
+        </div>
       </div>
+
     </div>
  
   </body>

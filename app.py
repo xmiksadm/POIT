@@ -31,15 +31,13 @@ def background_thread(args):
     db = MySQLdb.connect(host=myhost,user=myuser,passwd=mypasswd,db=mydb)
     while True:
         if args:
-          A = dict(args).get('A')
           btnV = dict(args).get('btn_value')
           dbV = dict(args).get('db_value')
         else:
           A = 1
           btnV = 'null'
-          dbV = 'nieco'
+          dbV = 'null'
         socketio.sleep(2)
-        print(A)
         print(btnV)
         print(dbV)
         if btnV == "start":
@@ -51,7 +49,7 @@ def background_thread(args):
             vlhkost = hodnoty[0:5]
             teplota = hodnoty[6:11]
             relTeplota = hodnoty[12:17]
-            print(hodnoty)
+            print('Vlhkost: ' + vlhkost + ' Teplota: ' + teplota)
 
             dataDict = {
                 "t": time.time(),
@@ -81,50 +79,11 @@ def tabs():
 def graphlive():
     return render_template('graphlive.html', async_mode=socketio.async_mode)
 
-@socketio.on('my_event', namespace='/test')
-def test_message(message):   
-    session['receive_count'] = session.get('receive_count', 0) + 1 
-    session['A'] = message['value']
-    emit('my_response',
-         {'data': message['value'], 'count': session['receive_count']})
-
-@socketio.on('db_event', namespace='/test')
-def db_message(message):
-    session['db_value'] = message['value']
-
-@socketio.on('disconnect_request', namespace='/test')
-def disconnect_request():
-    session['receive_count'] = session.get('receive_count', 0) + 1
-    emit('my_response',
-         {'data': 'Disconnected!', 'count': session['receive_count']})
-    disconnect()
-
-@socketio.on('connect', namespace='/test')
-def test_connect():
-    global thread
-    with thread_lock:
-        if thread is None:
-            thread = socketio.start_background_task(target=background_thread, args=session._get_current_object())
-    emit('my_response', {'data': 'Connected', 'count': 0})
-
-@socketio.on('click_event', namespace='/test')
-def db_message(message):
-    session['btn_value'] = message['value']
-
-@socketio.on('disconnect', namespace='/test')
-def test_disconnect():
-    print('Client disconnected', request.sid)
-
-@socketio.on('click_event', namespace='/test')
-def db_message(message):
-    session['btn_value'] = message['value']
-
 # DB routes
 @app.route('/db')
 def db():
   db = MySQLdb.connect(host=myhost,user=myuser,passwd=mypasswd,db=mydb)
   cursor = db.cursor()
-  # cursor.execute('''SELECT  hodnoty FROM  graph WHERE id=1''')
   cursor.execute('''SELECT * FROM monitoring''')
   rv = cursor.fetchall()
   return str(rv)
@@ -165,6 +124,38 @@ def readmyfile(num):
     fo = open("static/files/output.txt","r")
     rows = fo.readlines()
     return rows[int(num)-1]
+
+# SOCKET IO
+@socketio.on('db_event', namespace='/test')
+def db_message(message):
+    session['db_value'] = message['value']
+
+@socketio.on('disconnect_request', namespace='/test')
+def disconnect_request():
+    session['receive_count'] = session.get('receive_count', 0) + 1
+    emit('my_response',
+         {'data': 'Disconnected!', 'count': session['receive_count']})
+    disconnect()
+
+@socketio.on('connect', namespace='/test')
+def test_connect():
+    global thread
+    with thread_lock:
+        if thread is None:
+            thread = socketio.start_background_task(target=background_thread, args=session._get_current_object())
+    emit('my_response', {'data': 'Connected', 'count': 0})
+
+@socketio.on('click_event', namespace='/test')
+def db_message(message):
+    session['btn_value'] = message['value']
+
+@socketio.on('disconnect', namespace='/test')
+def test_disconnect():
+    print('Client disconnected', request.sid)
+
+@socketio.on('click_event', namespace='/test')
+def db_message(message):
+    session['btn_value'] = message['value']
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=80, debug=True)

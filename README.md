@@ -1,2 +1,2 @@
 # POIT
-Zaverecne zadanie z predemtu Pokrocile informacne technologie
+Záverečné zadanie z predmetu Pokročilé informačné technológie
