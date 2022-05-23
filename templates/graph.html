@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html>
+ <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Graf</title>
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.5/socket.io.min.js"></script>
+  <script src="static/libs/plotly-latest.min.js"></script>
+  <script src="static/libs/jquery-1.11.1.min.js"></script>
+  <script type="text/javascript" charset="utf-8">
+    $(document).ready(function() {
+    var layout = {
+      title: 'Vlhkosť a teplota',
+      xaxis: {
+        title: 'čas',
+        range: [0,60]
+      },
+      yaxis: {
+        title: 'ys(t)'
+      }
+    };
+
+    $('form#emit').submit(function(event) {
+      var id;
+      var traces = new Array();
+      id = $('#emit_value').val()
+      console.log(id)
+        
+        $.ajax({
+          type: "GET",
+          url: "/read/" + id,
+          success: function(data) { 
+            console.log(data);  
+            data = JSON.parse(data);
+            console.log(data);    
+            n = Object.keys(data).length;
+            console.log(n);
+            
+            x = [];
+            vlhkost = [];
+            teplota = [];
+
+            $("#log").empty();
+
+            for (var i=0; i<n; i++){
+              x.push(data[i].x);
+              vlhkost.push(data[i].vlhkost);
+              teplota.push(data[i].teplota); 
+              $('#log').append('Received #'+data[i].x+': humidity: '+data[i].vlhkost+', temperature: '+data[i].teplota+'<br>').html();
+            }
+            
+            let traceVlhkost = {
+              x: x,
+              y: vlhkost,
+              name: 'Vlhkosť'
+            };
+            let traceTeplota = {
+              x: x,
+              y: teplota,
+              name: 'Teplota'
+            };
+
+            traces.push(traceVlhkost);
+            traces.push(traceTeplota);
+
+            Plotly.newPlot($('#plotdiv')[0], traces,layout);           
+          }
+        }).done(function( o ) {
+          console.log("success");
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+          console.log("not found");
+          $('#log').append('ID: '+id+' not found in file.<br>').html();
+        });
+
+        return false;
+      });
+    });
+  </script>
+ </head>
+ <body>
+  <a href="/tabs">
+    <button>Back</button>
+  </a>
+  <h1>Hodnoty zo suboru</h1>
+  <div id="plotdiv" style="width:700px;height:300px;"></div>
+  <form id="emit" method="POST" action='#'>
+    <input type="text" name="emit_value" id="emit_value" placeholder="ID">
+    <input type="submit" value="Fetch">
+  </form>
+  <h2>Receive:</h2>
+  <div id="log"></div>
+ </body>
+</html>

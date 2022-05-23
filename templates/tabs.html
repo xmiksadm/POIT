@@ -220,7 +220,7 @@
               $( "#dialog-low" ).dialog("close");
           }
         });
-        
+
         $('#buttonVal').click(function(event) {
           if ($(this).text() == "Start") {
             $(this).text("Stop");
@@ -309,7 +309,7 @@
       </ul>
 
       <div id="tabs-1">
-        <h1>Flask-SocketIO Test</h1>
+        <h1>Flask-SocketIO Live Monitoring</h1>
         <button id="buttonVal" type="submit" value="start">Start</button>
         <form id="disconnect" method="POST" action="#">
           <input type="submit" value="Disconnect">
@@ -321,6 +321,13 @@
       <div id="tabs-2">
         <h1>Flask-SocketIO Graph</h1>
         <div id="plotdiv" style="width:600px;height:250px;"></div>
+
+        <a href="/graph">
+          <button>Hodnoty zo suboru</button>
+        </a>
+        <a href="/graphdb">
+          <button>Hodnoty z databazy</button>
+        </a>
       </div>
 
       <div id="tabs-3">
